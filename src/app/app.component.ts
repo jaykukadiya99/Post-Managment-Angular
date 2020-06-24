@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 
+import {Posts} from './models/posts.model';
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -7,4 +9,9 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'Mean-App';
+  appPosts : Posts[] = [];
+
+  onPostAdded(post){
+    this.appPosts.push(post);
+  }
 }
