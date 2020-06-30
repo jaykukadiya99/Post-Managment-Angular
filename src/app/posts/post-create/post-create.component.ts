@@ -1,9 +1,9 @@
-import { Component, OnInit, EventEmitter, Output } from '@angular/core';
-
-import { Posts } from '../../models/posts.model';
+import { Component, OnInit} from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 
 import { PostsService } from '../../service/posts.service';
+import { Posts } from '../../models/posts.model';
 
 @Component({
   selector: 'app-post-create',
@@ -13,45 +13,45 @@ import { PostsService } from '../../service/posts.service';
 export class PostCreateComponent implements OnInit {
   enteredTitle = '';
   enteredContent = '';
+  private mode ='create';
+  public isLoading =true;
+  private postId:string;
+  post:Posts;
 
-  postCreated;
-
-  constructor(public postService: PostsService) { }
+  constructor(public postService: PostsService,public route:ActivatedRoute) { }
 
   ngOnInit(): void {
+    this.route.paramMap.subscribe((paramMap:ParamMap)=>{
+      if(paramMap.has('postId')){
+        this.mode='edit';
+        this.postId = paramMap.get('postId');
+        this.postService.getpost(this.postId).subscribe(postData => {
+          this.isLoading=false
+          this.post = {id:postData.posts._id,title:postData.posts.title,content:postData.posts.content}
+        });
+      }
+      else{
+        this.mode='create';
+        this.isLoading=false
+        this.postId=null;
+      }
+    });
   }
 
-  onAddPost(form: NgForm) {
+  onSavePost(form: NgForm) {
     if (form.invalid) {
       return;
     }
-    this.postService.addPost(form.value.title,form.value.content);
+    if(this.mode==='create')
+    {
+      this.postService.addPost(form.value.title,form.value.content);
+    }
+    else
+    {
+      this.postService.updatePost(this.postId,form.value.title,form.value.content);
+    }
     form.resetForm();
   }
 
-  // onAddPost(id1 : HTMLInputElement){
-  //   this.newPost=this.enterValue + id1.value; 
-  // }
-
-  // @Output() postCreated = new EventEmitter<Posts>();
-  // onAddPost(form:NgForm){
-  //   if(form.invalid)
-  //   {
-  //     return;
-  //   }
-  //   const post : Posts= {
-  //     title:form.value.title,
-  //     content:form.value.content
-  //   };
-  //   this.postCreated.emit(post);
-  // }
-
-  // onAddPost(){
-  //   const post : Posts= {
-  //     title:this.enteredTitle,
-  //     content:this.enteredContent
-  //   };
-
-  //   this.postCreated.emit(post);
-  // }
+  
 }

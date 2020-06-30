@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Posts } from '../models/posts.model';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+
 import { map } from 'rxjs/operators';
 
 @Injectable({
@@ -11,7 +13,7 @@ export class PostsService {
   private posts: Posts[] = [];
   private postUpdated = new Subject<Posts[]>();
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,private router:Router) { }
 
   getPosts() {
     this.http
@@ -35,6 +37,10 @@ export class PostsService {
     return this.postUpdated.asObservable();
   }
 
+  getpost(id:string){
+    return this.http.get<{ message: string, posts: any }>("http://localhost:3000/api/posts/"+ id);
+  }
+
   addPost(title: string, content: string) {
     const post: Posts = { id: null, title: title, content: content };
     this.http
@@ -46,7 +52,22 @@ export class PostsService {
         this.posts.push(post);
         this.postUpdated.next([...this.posts]);
       });
+      this.router.navigate(['/']);
+  }
 
+  updatePost(id:string,title:string,content:string){
+    const post : Posts = {id:id,title:title,content:content};
+
+    this.http
+      .put<{ message: string }>("http://localhost:3000/api/posts/" + id,post)
+      .subscribe(response =>{
+        const updatedposts = [...this.posts];
+        const oldIndex = updatedposts.findIndex(p =>p.id===id);
+        updatedposts[oldIndex] = post;
+        this.posts = updatedposts;
+        this.postUpdated.next([...this.posts]);
+      });
+      this.router.navigate(['/']);
   }
 
   deletePost(postId: string) {
@@ -56,14 +77,6 @@ export class PostsService {
         const updatedposts = this.posts.filter(post=>post.id!==postId);
         this.posts = updatedposts;
         this.postUpdated.next([...this.posts]);
-      })
-  }
-  updatePost(postId: string,title: string, content: string) {
-    const post: Posts = { id: null, title: title, content: content };
-    this.http
-      .put<{ message: string }>("http://localhost:3000/api/posts/" + postId,post)
-      .subscribe(()=>{
-        console.log("delete");
-      })
+      });
   }
 }
