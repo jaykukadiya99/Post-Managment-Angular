@@ -6,6 +6,10 @@ mat-spinner {
     margin: auto;
 }
 
+input[type='file'] {
+    visibility: hidden;
+}
+
 mat-form-field,
 textarea {
     width: 100%;
