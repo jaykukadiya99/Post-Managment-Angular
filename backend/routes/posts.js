@@ -68,14 +68,22 @@ router.get('/:id', async(req, res, next) => {
     res.status(200).json({ message: "Get one posts done", posts: posts });
 });
 
-router.put('/:id', async(req, res, next) => {
+router.put('/:id', multer({ storage: storage }).single('image'), async(req, res, next) => {
+    let url
+    let imagePath = req.body.imagePath;
+    if (req.file) {
+        url = req.protocol + '://' + req.get("host");
+        imagePath = url + "/images/" + req.file.filename;
+    }
+
     const newPost = new post({
         _id: req.params.id,
         title: req.body.title,
-        content: req.body.content
+        content: req.body.content,
+        imagePath: imagePath
     });
     const result = await post.findByIdAndUpdate(req.params.id, newPost);
-    res.status(200).json({ message: "update successful" });
+    res.status(200).json({ message: "update successful", post: newPost });
 });
 
 router.delete('/:id', async(req, res, next) => {
