@@ -7,7 +7,8 @@ mongoose.connect("mongodb+srv://jay:jk@mongocluster-izqv5.mongodb.net/MeanStacks
 
 const postSchema = new mongoose.Schema({
     title: String,
-    content: String
+    content: String,
+    imagePath: String
 });
 
 module.exports = mongoose.model("Posts", postSchema);

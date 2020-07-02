@@ -23,7 +23,8 @@ export class PostsService {
           return {
             title: post.title,
             content: post.content,
-            id: post._id
+            id: post._id,
+            imagePath:post.imagePath
           }
         });
       }))
@@ -41,14 +42,20 @@ export class PostsService {
     return this.http.get<{ message: string, posts: any }>("http://localhost:3000/api/posts/"+ id);
   }
 
-  addPost(title: string, content: string) {
-    const post: Posts = { id: null, title: title, content: content };
+  addPost(title: string, content: string,image:File) {
+    const postData = new FormData();
+    postData.append("title",title);
+    postData.append("content",content);
+    postData.append("image",image,title);
+
     this.http
-      .post<{ message: string ,postId:string}>("http://localhost:3000/api/posts", post)
+      .post<{ message: string ,post:Posts}>("http://localhost:3000/api/posts", postData)
       .subscribe((data) => {
-        console.log(data.message);
-        post.id = data.postId;
-        console.log(post.id);
+        const post: Posts = { 
+          id: data.post.id,
+          title: title,
+          content: content,
+          imagePath: data.post.imagePath};      
         this.posts.push(post);
         this.postUpdated.next([...this.posts]);
       });
@@ -56,7 +63,7 @@ export class PostsService {
   }
 
   updatePost(id:string,title:string,content:string){
-    const post : Posts = {id:id,title:title,content:content};
+    const post : Posts = {id:id,title:title,content:content,imagePath:null};
 
     this.http
       .put<{ message: string }>("http://localhost:3000/api/posts/" + id,post)
