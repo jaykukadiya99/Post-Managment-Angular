@@ -59,8 +59,17 @@ router.get('/', async(req, res, next) => {
     //         content: "first content"
     //     }
     // ];
-    posts = await post.find({});
-    res.status(200).json({ message: "Get posts done", posts: posts });
+    const pageSize = +req.query.pageSize;
+    const pageIndex = +req.query.pageIndex;
+    let posts;
+    if (pageSize && pageIndex) {
+        posts = await post.find().skip(pageSize * (pageIndex - 1))
+            .limit(pageSize);
+    } else {
+        posts = await post.find();
+    }
+    const cnt = await post.countDocuments();
+    res.status(200).json({ message: "Get posts done", posts: posts, count: cnt });
 });
 
 router.get('/:id', async(req, res, next) => {

@@ -18,3 +18,5 @@
 <p class="info-text mat-body-1" *ngIf="posts.length == 0 && !isLoading">
     No Post Created yet !
 </p>
+<mat-paginator [length]="pageLength" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" (page)="pageChange($event)" *ngIf="posts.length > 0">
+</mat-paginator>
