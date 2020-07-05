@@ -1,5 +1,5 @@
 <mat-card>
-    <form (submit)="onLogin(loginForm)" #loginForm="ngForm">
+    <form (submit)="onSignup(signupForm)" #signupForm="ngForm">
         <mat-form-field>
             <input type="email" name="email" matInput placeholder="Email" ngModel #emailInput="ngModel" required email/>
             <mat-error *ngIf="emailInput.invalid">Enter Email</mat-error>
@@ -8,6 +8,6 @@
             <input type="password" matInput placeholder="Pass" ngModel name="password" #passwordInput="ngModel" />
             <mat-error *ngIf="passwordInput.invalid">Enter Password</mat-error>
         </mat-form-field>
-        <button mat-raised-button color="primary" type="submit">Login</button>
+        <button mat-raised-button color="primary" type="submit">Signup</button>
     </form>
 </mat-card>

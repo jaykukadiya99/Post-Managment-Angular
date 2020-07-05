@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const post = require('../models/postModel');
+const Auth = require('../middleware/checkAuth');
 const multer = require('multer');
 
 const MIME_TYPE_MAP = {
@@ -25,7 +26,7 @@ const storage = multer.diskStorage({
     }
 });
 
-router.post('/', multer({ storage: storage }).single('image'), async(req, res, next) => {
+router.post('/', Auth, multer({ storage: storage }).single('image'), async(req, res, next) => {
     // console.log(req.body);
 
     const url = req.protocol + '://' + req.get("host");
@@ -77,7 +78,7 @@ router.get('/:id', async(req, res, next) => {
     res.status(200).json({ message: "Get one posts done", posts: posts });
 });
 
-router.put('/:id', multer({ storage: storage }).single('image'), async(req, res, next) => {
+router.put('/:id', Auth, multer({ storage: storage }).single('image'), async(req, res, next) => {
     let url
     let imagePath = req.body.imagePath;
     if (req.file) {
@@ -95,7 +96,7 @@ router.put('/:id', multer({ storage: storage }).single('image'), async(req, res,
     res.status(200).json({ message: "update successful", post: newPost });
 });
 
-router.delete('/:id', async(req, res, next) => {
+router.delete('/:id', Auth, async(req, res, next) => {
     await post.findByIdAndDelete(req.params.id);
     res.status(200).json({
         message: "post deleted"
