@@ -44,9 +44,15 @@ export class AuthService {
         if(this.token){
           this.isAuthenticated=true;
           this.authStatusListner.next(true);
+          const expiresIn = response.expiresIn;
           this.tokenTimer = setTimeout(()=>{
             this.logout();
-          },response.expiresIn * 1000);
+          },expiresIn * 1000);
+
+          const now:Date = new Date();
+          const expriesDate = new Date(now.getTime() + (expiresIn*1000));
+          this.saveAuthData(this.token,expriesDate);
+
           this.router.navigate(['/']);
         }
       })
@@ -58,6 +64,32 @@ export class AuthService {
     this.isAuthenticated = false;
     this.authStatusListner.next(false);
     clearTimeout(this.tokenTimer);
+    this.clearAuthData();
     this.router.navigate(['/']);
+  }
+
+  autoAuthUser(){
+    const token = localStorage.getItem("token");
+    const expiresIn = new Date(localStorage.getItem("expriesDate"));
+    const isInFuture = expiresIn.getTime() - new Date().getTime() ; 
+    if(!token || !expiresIn){
+      return null;
+    }
+    if(isInFuture>0){
+      this.isAuthenticated=true;
+      this.authStatusListner.next(true);
+      this.tokenTimer = setTimeout(()=>{
+        this.logout();
+      },isInFuture);      
+    }
+  }
+  private saveAuthData(token:string,expriesDate:Date){
+    localStorage.setItem("token",token);
+    localStorage.setItem("expriesDate",expriesDate.toISOString());
+  }
+
+  private clearAuthData(){
+    localStorage.removeItem("token");
+    localStorage.removeItem("expriesDate");
   }
 }
