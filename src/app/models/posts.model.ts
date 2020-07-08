@@ -3,4 +3,5 @@ export class Posts {
     title:string;
     content:string;
     imagePath:string;
+    creator:string;
 }

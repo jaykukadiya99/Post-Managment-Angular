@@ -30,11 +30,12 @@ router.post('/', Auth, multer({ storage: storage }).single('image'), async(req, 
     // console.log(req.body);
 
     const url = req.protocol + '://' + req.get("host");
-
+    // console.log(req.userData.userId);
     newPost = new post({
         title: req.body.title,
         content: req.body.content,
-        imagePath: url + "/images/" + req.file.filename
+        imagePath: url + "/images/" + req.file.filename,
+        creator: req.userData.userId
     });
 
     await newPost.save();
@@ -90,17 +91,25 @@ router.put('/:id', Auth, multer({ storage: storage }).single('image'), async(req
         _id: req.params.id,
         title: req.body.title,
         content: req.body.content,
-        imagePath: imagePath
+        imagePath: imagePath,
+        creator: req.userData.userId
     });
-    const result = await post.findByIdAndUpdate(req.params.id, newPost);
-    res.status(200).json({ message: "update successful", post: newPost });
+    const result = await post.findOneAndUpdate({ _id: req.params.id, creator: req.userData.userId }, newPost);
+    if (result != null) {
+        res.status(200).json({ message: "update successful", post: newPost });
+    } else {
+        res.status(401).json({ message: "auth fail", post: null });
+    }
 });
 
 router.delete('/:id', Auth, async(req, res, next) => {
-    await post.findByIdAndDelete(req.params.id);
-    res.status(200).json({
-        message: "post deleted"
-    })
+    const result = await post.findOneAndDelete({ _id: req.params.id, creator: req.userData.userId });
+    if (result != null) {
+        res.status(200).json({ message: "post deleted" });
+    } else {
+        res.status(401).json({ message: "auth fail" });
+    }
+
 });
 
 module.exports = router;
