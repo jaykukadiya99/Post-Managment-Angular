@@ -30,12 +30,12 @@ router.post('/login', async(req, res, next) => {
         const user = await userModel.findOne({ email: req.body.email })
         if (!user) {
             return res.status(401).json({
-                message: "Auth fail"
+                message: "User not found"
             });
         }
-        if (!bcryptjs.compare(req.body.password, user.password)) {
+        if (!await bcryptjs.compare(req.body.password, user.password)) {
             return res.status(401).json({
-                message: "Auth fail"
+                message: "Invalid Password"
             });
         } else {
             const token = jwt.sign({ email: user.email, userId: user._id }, 'secrate_key', { expiresIn: '1h' });

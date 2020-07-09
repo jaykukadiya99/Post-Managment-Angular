@@ -38,6 +38,8 @@ export class AuthService {
       .subscribe(response => {
         console.log(response);
         this.router.navigate(['/']);
+      },error =>{
+        // alert("Somthiing goes wrong");
       })
   }
 
@@ -61,7 +63,9 @@ export class AuthService {
 
           this.router.navigate(['/']);
         }
-      })
+      },error =>{
+        // alert("Somthiing goes wrong");
+      });
   }
 
 
