@@ -1,0 +1,6 @@
+{
+    "env": {
+        "PASS": "jk",
+        "JWTKEY": "secrate_key"
+    }
+}

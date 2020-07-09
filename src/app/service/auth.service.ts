@@ -1,15 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
-
+import { environment } from "./../../environments/environment";
 import { AuthData } from '../models/auth-data.model';
 import { Router } from '@angular/router';
 
+const BASE_URL: string = environment.apiUrl + "users/";
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private baseUrl: string = "http://localhost:3000/api/users";
+  
   private token: string;
   private tokenTimer: any;
   private userId:string;
@@ -34,7 +35,7 @@ export class AuthService {
 
   createUser(email: string, password: string) {
     const authData: AuthData = { email: email, password: password };
-    this.http.post(this.baseUrl, authData)
+    this.http.post(BASE_URL, authData)
       .subscribe(response => {
         console.log(response);
         this.router.navigate(['/']);
@@ -45,7 +46,7 @@ export class AuthService {
 
   loginUser(email: string, password: string) {
     const authData: AuthData = { email: email, password: password };
-    this.http.post<{ token: string, expiresIn: number,userId:string }>(this.baseUrl + "/login", authData)
+    this.http.post<{ token: string, expiresIn: number,userId:string }>(BASE_URL + "login", authData)
       .subscribe(response => {
         this.token = response.token;
         if (this.token) {

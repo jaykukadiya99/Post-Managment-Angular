@@ -38,7 +38,7 @@ router.post('/login', async(req, res, next) => {
                 message: "Invalid Password"
             });
         } else {
-            const token = jwt.sign({ email: user.email, userId: user._id }, 'secrate_key', { expiresIn: '1h' });
+            const token = jwt.sign({ email: user.email, userId: user._id }, process.env.JWTKEY, { expiresIn: '1h' });
             res.status(200).json({
                 token: token,
                 expiresIn: "3600",

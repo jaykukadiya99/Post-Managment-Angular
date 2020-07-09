@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Subject, from } from 'rxjs';
 import { Posts } from '../models/posts.model';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-
+import { environment } from './../../environments/environment'
 import { map } from 'rxjs/operators';
+
+const BASE_URL = environment.apiUrl + "posts/"
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +20,7 @@ export class PostsService {
   getPosts(pageSize: number, pageIndex: number) {
     const queryParam = `?pageSize=${pageSize}&pageIndex=${pageIndex}`
     this.http
-      .get<{ message: string, posts: any, count: number }>("http://localhost:3000/api/posts" + queryParam)
+      .get<{ message: string, posts: any, count: number }>(BASE_URL + queryParam)
       .pipe(map((data) => {
         return {
           post: data.posts.map(post => {
@@ -45,7 +47,7 @@ export class PostsService {
   }
 
   getpost(id: string) {
-    return this.http.get<{ message: string, posts: any }>("http://localhost:3000/api/posts/" + id);
+    return this.http.get<{ message: string, posts: any }>(BASE_URL + id);
   }
 
   addPost(title: string, content: string, image: File) {
@@ -55,7 +57,7 @@ export class PostsService {
     postData.append("image", image, title);
 
     this.http
-      .post<{ message: string, post: Posts }>("http://localhost:3000/api/posts", postData)
+      .post<{ message: string, post: Posts }>(BASE_URL, postData)
       .subscribe((data) => {
         this.router.navigate(['/']);
       });
@@ -74,7 +76,7 @@ export class PostsService {
     }
 
     this.http
-      .put<{ message: string, post: Posts }>("http://localhost:3000/api/posts/" + id, postData)
+      .put<{ message: string, post: Posts }>(BASE_URL + id, postData)
       .subscribe(response => {
         this.router.navigate(['/']);
       });
@@ -82,6 +84,6 @@ export class PostsService {
 
   deletePost(postId: string) {
     return this.http
-      .delete<{ message: string }>("http://localhost:3000/api/posts/" + postId);
+      .delete<{ message: string }>(BASE_URL + postId);
   }
 }

@@ -6,7 +6,7 @@ const path = require('path');
 const mongoose = require('mongoose');
 
 
-mongoose.connect("mongodb+srv://jay:jk@mongocluster-izqv5.mongodb.net/MeanStacks?w=majority", { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false })
+mongoose.connect("mongodb+srv://jay:" + process.env.PASS + "@mongocluster-izqv5.mongodb.net/MeanStacks?w=majority", { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false })
     .then(() => {
         console.log("database connected");
     });
